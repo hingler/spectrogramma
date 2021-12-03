@@ -23,7 +23,6 @@ class FFT {
 
   void CacheTrigFunctions();
   void GenerateReverseBitTable();
-
   float** GenericTransform(bool invert);
  public:
   /**

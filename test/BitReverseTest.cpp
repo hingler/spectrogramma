@@ -25,11 +25,11 @@ static void testLen(uint32_t len) {
   uint32_t temp;
   uint32_t res;
 
-  for (uint32_t i = 0; i < (1 << (len - 1)); i++) {
+  for (uint32_t i = 0; i < (1U << (len - 1)); i++) {
     temp = i;
     reverseVerify = 0;
 
-    for (int j = 0; j < len; j++) {
+    for (uint32_t j = 0; j < len; j++) {
       reverseVerify <<= 1;
       reverseVerify |= (temp & 1);
       temp >>= 1;

@@ -1,9 +1,11 @@
 #include <FFT.hpp>
+#include <Macro.hpp>
 
 #define _USE_MATH_DEFINES
 
 #include <cassert>
 #include <cmath>
+#include <cstring>
 #include <exception>
 #include <stdexcept>
 
@@ -90,7 +92,7 @@ void FFT::GenerateReverseBitTable() {
     std::cout << "BIT LEN EQUAL TO " << len << std::endl;
   #endif
 
-  for (uint32_t i = 0; i < len_; i++) {
+  for (int i = 0; i < len_; i++) {
     reverse_bits_table_[i] = BitReverse(i, len);
   }
 }
@@ -115,14 +117,14 @@ float** FFT::GenericTransform(bool invert) {
   double even_imag, even_real, odd_imag, odd_real;
   double sin_res, cos_res;
 
-  uint32_t even_ind, odd_ind, trig_ind;
+  int even_ind, odd_ind, trig_ind;
 
   float** res = new float*[2];
 
   res[0] = new float[len_]; // real
   res[1] = new float[len_]; // imag
 
-  for (uint32_t i = 0; i < len_; i++) {
+  for (int i = 0; i < len_; i++) {
     res[0][i] = real_[reverse_bits_table_[i]];
     res[1][i] = imag_[reverse_bits_table_[i]];
   }
@@ -132,10 +134,10 @@ float** FFT::GenericTransform(bool invert) {
   int mul = (invert ? -1 : 1);
   int len = (invert ? len_ : 0);
 
-  for (uint32_t size = 1; size < len_; size <<= 1) {
-    uint32_t runs = (len_ / size) / 2;
-    for (uint32_t i = 0; i < runs; i++) {
-      for (uint32_t k = 0; k < size; k++) {
+  for (int size = 1; size < len_; size <<= 1) {
+    int runs = (len_ / size) / 2;
+    for (int i = 0; i < runs; i++) {
+      for (int k = 0; k < size; k++) {
         even_ind = i * 2 * size + k;
         odd_ind = even_ind + size;
 
@@ -179,24 +181,56 @@ float** FFT::GenericTransform(bool invert) {
 
 // inverse transform is equiv to transform, only we flip our thetas
 
+FFT::FFT(const FFT& other) : FFT(other.real_, other.imag_, other.len_) {}
+FFT::FFT(FFT&& other) {
+  sin_cache_ = other.sin_cache_;
+  cos_cache_ = other.cos_cache_;
+  reverse_bits_table_ = other.reverse_bits_table_;
+  real_ = other.real_;
+  imag_ = other.imag_;
+
+  other.sin_cache_ = NULL;
+  other.cos_cache_ = NULL;
+  other.reverse_bits_table_ = NULL;
+  other.real_ = NULL;
+  other.imag_ = NULL;
+}
+
+FFT& FFT::operator=(const FFT& other) {
+  len_ = other.len_;
+  sin_cache_ = new float[len_ + 1];
+  cos_cache_ = new float[len_ + 1];
+
+  reverse_bits_table_ = new uint32_t[len_];
+
+  real_ = new float[len_];
+  imag_ = new float[len_];
+
+  if (sin_cache_ == NULL || cos_cache_ == NULL || reverse_bits_table_ == NULL || real_ == NULL || imag_ == NULL) {
+    throw std::runtime_error("Not enough memory could be allocated for FFT");
+  }
+
+  memcpy(sin_cache_, other.sin_cache_, sizeof(float) * (len_ + 1));
+  memcpy(cos_cache_, other.cos_cache_, sizeof(float) * (len_ + 1));
+  memcpy(reverse_bits_table_, other.reverse_bits_table_, sizeof(uint32_t) * len_);
+  memcpy(real_, other.real_, sizeof(float) * len_);
+  memcpy(imag_, other.imag_, sizeof(float) * len_);
+
+  return *this;
+}
+
+FFT& FFT::operator=(FFT&& other) {
+  len_ = other.len_;
+  sin_cache_ = other.sin_cache_;
+  cos_cache_ = other.cos_cache_;
+
+  return *this;
+}
+
 FFT::~FFT() {
-  if (sin_cache_ != NULL) {
-    delete sin_cache_;
-  }
-
-  if (cos_cache_ != NULL) {
-    delete cos_cache_;
-  }
-
-  if (reverse_bits_table_ != NULL) {
-    delete reverse_bits_table_;
-  }
-
-  if (real_ != NULL) {
-    delete real_;
-  }
-
-  if (imag_ != NULL) {
-    delete imag_;
-  }
+  FREE_IF_NONNULL_A(sin_cache_);
+  FREE_IF_NONNULL_A(cos_cache_);
+  FREE_IF_NONNULL_A(reverse_bits_table_);
+  FREE_IF_NONNULL_A(real_);
+  FREE_IF_NONNULL_A(imag_);
 }

@@ -10,24 +10,39 @@ set(INC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
+if(MSVC)
+  add_compile_options(/W3)
+else()
+  add_compile_options(-Wall)
+endif()
+
 ## stb ##
 find_path(STB_INCLUDE_DIRS "stb.h")
 find_package(GTest CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
-add_library(fftlib ${SRC_DIR}/FFT.cpp)
+add_library(fftlib ${SRC_DIR}/FFT.cpp ${SRC_DIR}/ImageData.cpp)
+
+target_link_libraries(fftlib PUBLIC glm)
 target_include_directories(fftlib PUBLIC ${INC_DIR})
+target_include_directories(fftlib PUBLIC ${STB_INCLUDE_DIRS})
+
+add_custom_command(TARGET fftlib POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/res $<TARGET_FILE_DIR:fftlib>/res)
 
 set(TEST_PATHS ${TEST_DIR}/BitReverseTest.cpp
-               ${TEST_DIR}/FFTTest.cpp)
+               ${TEST_DIR}/FFTTest.cpp
+               ${TEST_DIR}/ImageDataTest.cpp)
 
 set(TEST_NAMES BitReverseTest
-               FFTTest)
+               FFTTest
+               ImageDataTest)
 
 foreach(test_path test_name IN ZIP_LISTS TEST_PATHS TEST_NAMES)
   add_executable(${test_name} ${test_path})
   target_link_libraries(${test_name} PRIVATE GTest::gtest_main fftlib)
-  target_include_directories(${test_name} PUBLIC ${INC_DIR})
-  add_test(NAME ${test_name} COMMAND ${test_name})
+  target_include_directories(${test_name} PUBLIC ${INC_DIR} ${STB_INCLUDE_DIRS})
+  add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY $<TARGET_FILE_DIR:fftlib>)
 endforeach()
 
 include(CPack)
