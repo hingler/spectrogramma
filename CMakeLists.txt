@@ -20,15 +20,19 @@ endif()
 find_path(STB_INCLUDE_DIRS "stb.h")
 find_package(GTest CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(AudioFile CONFIG REQUIRED)
 
-add_library(fftlib ${SRC_DIR}/FFT.cpp ${SRC_DIR}/ImageData.cpp)
+add_library(fftlib ${SRC_DIR}/FFT.cpp ${SRC_DIR}/ImageData.cpp ${SRC_DIR}/STBImage.cpp ${SRC_DIR}/ImagePtr.cpp ${SRC_DIR}/fft_convert.cpp ${SRC_DIR}/audio_write.cpp)
 
-target_link_libraries(fftlib PUBLIC glm)
+target_link_libraries(fftlib PUBLIC glm::glm AudioFile)
 target_include_directories(fftlib PUBLIC ${INC_DIR})
 target_include_directories(fftlib PUBLIC ${STB_INCLUDE_DIRS})
 
 add_custom_command(TARGET fftlib POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/res $<TARGET_FILE_DIR:fftlib>/res)
+
+add_executable(spectrogramma ${SRC_DIR}/main.cpp)
+target_link_libraries(spectrogramma PRIVATE fftlib)
 
 set(TEST_PATHS ${TEST_DIR}/BitReverseTest.cpp
                ${TEST_DIR}/FFTTest.cpp

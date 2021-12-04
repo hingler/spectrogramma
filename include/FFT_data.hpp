@@ -2,10 +2,12 @@
 #define FFT_DATA_H_
 
 #include <memory>
+#include <vector>
 
+template <typename T>
 struct FFT_data {
-  std::shared_ptr<float> real;
-  std::shared_ptr<float> imag;
+  std::vector<T> real;
+  std::vector<T> imag;
 };
 
 #endif // FFT_DATA_H_

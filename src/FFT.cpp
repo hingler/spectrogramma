@@ -1,7 +1,9 @@
+#define _USE_MATH_DEFINES
+
 #include <FFT.hpp>
+#include <FFT_data.hpp>
 #include <Macro.hpp>
 
-#define _USE_MATH_DEFINES
 
 #include <cassert>
 #include <cmath>
@@ -61,6 +63,7 @@ void FFT::SetSampleData(const float* real, const float* imag) {
     } else {
       real_[i] = 0.0F;
     }
+
     if (imag != NULL) {
       imag_[i] = imag[i];
     } else {
