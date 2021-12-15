@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv) {
   if (argc < 4) {
-    std::cout << "USAGE: ./spectrogramma <input image> <output path> <num-samples> {<sample-count=1024>}" << std::endl;
+    std::cout << "USAGE: ./spectrogramma <input image> <output path> <num-samples> {<sample-count>}" << std::endl;
     return 1;
   }
 
