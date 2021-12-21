@@ -3,7 +3,7 @@
 #include <ImageData.hpp>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
+#include <stb/stb_image_write.h>
 
 #include <iostream>
 
@@ -32,7 +32,6 @@ int main(int argc, char** argv) {
   
   ImageData src(argv[1]);
   ImageData fftImage = fft_convert::ImageFFT(src, sample_count);
-  stbi_write_hdr("./res/lmnop.hdr", fftImage.GetDimensions().x, fftImage.GetDimensions().y, 1, fftImage.GetImageData());
   std::vector<float> samples = fft_convert::FFTToSamples(fftImage, static_cast<uint32_t>(num_samples));
   audio_write::Normalize(samples);
   audio_write::WriteSamplesToFile(std::string(argv[2]), samples);

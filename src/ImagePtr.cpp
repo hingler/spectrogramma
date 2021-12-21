@@ -1,7 +1,9 @@
 #include <ImagePtr.hpp>
 #include <Macro.hpp>
 
+#include <cstring>
 #include <stdexcept>
+
 
 ImagePtr::ImagePtr(const float* ptr, int x, int y, int channel_count) {
   image_ptr_ = new float[x * y * channel_count];

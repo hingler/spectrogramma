@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <FFT.hpp>
 
+#include <cmath>
+
 #define EPS 0.00001
 
 const static float real_in[8] = {0, 1, 0, -1, 0, 1, 0, -1};
@@ -34,7 +36,7 @@ TEST(FFTTest, ValuePreservation) {
   for (int i = 0; i < 512; i++) {
     the = 0.0f;
     for (int j = 0; j < 32; j++) {
-      the += sinf(static_cast<float>(j * j * i) * 3.141592653589f * 2.0f / 512.0f);
+      the += std::sin(static_cast<float>(j * j * i) * 3.141592653589f * 2.0f / 512.0f);
     }
 
     data_real[i] = the;

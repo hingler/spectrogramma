@@ -9,6 +9,7 @@ enable_testing()
 set(INC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
+set(LIB_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 if(MSVC)
   add_compile_options(/W3)
@@ -17,15 +18,14 @@ else()
 endif()
 
 ## stb ##
-find_path(STB_INCLUDE_DIRS "stb.h")
+find_path(STB_INCLUDE_DIRS "stb/stb.h")
 find_package(GTest CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(AudioFile CONFIG REQUIRED)
 
 add_library(fftlib ${SRC_DIR}/FFT.cpp ${SRC_DIR}/ImageData.cpp ${SRC_DIR}/STBImage.cpp ${SRC_DIR}/ImagePtr.cpp ${SRC_DIR}/fft_convert.cpp ${SRC_DIR}/audio_write.cpp)
 
-target_link_libraries(fftlib PUBLIC glm::glm AudioFile)
-target_include_directories(fftlib PUBLIC ${INC_DIR})
+target_link_libraries(fftlib PUBLIC glm::glm)
+target_include_directories(fftlib PUBLIC ${INC_DIR} ${LIB_DIR})
 target_include_directories(fftlib PUBLIC ${STB_INCLUDE_DIRS})
 
 add_custom_command(TARGET fftlib POST_BUILD

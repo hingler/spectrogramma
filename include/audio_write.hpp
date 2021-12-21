@@ -1,6 +1,8 @@
 #ifndef AUDIO_WRITE_H_
 #define AUDIO_WRITE_H_
 
+#include <algorithm>
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -13,9 +15,9 @@ namespace audio_write {
    */
   template <typename T>
   void Normalize(std::vector<T>& samples) {
-    T max = abs(samples[0]);
-    for (const auto& sample : samples) {
-      max = std::max(max, abs(sample));
+    double max = abs(samples[0]);
+    for (const T& sample : samples) {
+      max = std::max(max, std::abs(static_cast<double>(sample)));
     }
 
     double fac = 1.0 / static_cast<double>(max);

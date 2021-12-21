@@ -65,7 +65,7 @@ namespace fft_convert {
       transform.SetSampleData(fft_data, imag);
       // should be an object containing two vectors instead
       data = transform.InverseTransform_T();
-      audio_write::Normalize(data.real);
+      audio_write::Normalize<float>(data.real);
 
       for (int j = 0; j < 2 * samples_per_column; j++) {
         res[i * 2 * samples_per_column + j] = data.real[j];
