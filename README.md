@@ -6,7 +6,7 @@ Tool for turning images into audio files which will then be drawn onto a frequen
 
 Requires the STB libraries, GTest, GLM, and [AudioFile](https://github.com/adamstark/AudioFile).
 
-And CMake, of course.
+CMake to build.
 
 ## example output
 
